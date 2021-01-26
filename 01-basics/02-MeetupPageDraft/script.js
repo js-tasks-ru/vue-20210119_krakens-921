@@ -11,8 +11,8 @@ const MEETUP_ID = 6;
  * @param meetup - объект с описанием митапа (и параметром meetupId)
  * @return {string} - ссылка на изображение митапа
  */
-function getMeetupCoverLink(meetup) {
-  return `${API_URL}/images/${meetup.imageId}`;
+function getMeetupCoverLink(imageId) {
+  return `${API_URL}/images/${imageId}`;
 }
 
 /**
@@ -47,20 +47,47 @@ const agendaItemIcons = {
 export const app = new Vue({
   el: '#app',
 
-  data: {
-    //
+  data() {
+    return {
+      meetup: {
+        id: null,
+        title: '',
+        description: '',
+        imageId: 1,
+        date: null,
+        organizer: '',
+        place: '',
+        agenda: [],
+      },
+    };
   },
 
   mounted() {
-    // Требуется получить данные митапа с API
+    this.getMeetup(1);
   },
 
   computed: {
-    //
+    meetupImageUrl() {
+      return getMeetupCoverLink(this.meetup.imageId);
+    },
+    localMeetupDate() {
+      const options = { day: 'numeric', month: 'short', year: 'numeric'  };
+      return new Date(this.meetup.date).toLocaleString('RU-ru', options);
+    },
+    meetupICODate() {
+      return new Date(this.meetup.date).toISOString().slice(0,10);
+    },
   },
 
   methods: {
-    // Получение данных с API предпочтительнее оформить отдельным методом,
-    // а не писать прямо в mounted()
+    async getMeetup(meetupId) {
+      this.meetup = await (await fetch(`${API_URL}/meetups/${meetupId}`)).json();
+    },
+    getAgendaDefaultTitle(type) {
+      return agendaItemTitles[type];
+    },
+    getAgendaIcon(type) {
+      return agendaItemIcons[type];
+    },
   },
 });
