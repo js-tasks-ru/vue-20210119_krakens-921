@@ -80,7 +80,7 @@ export const app = new Vue({
       return new Date(this.meetup.date).toISOString().slice(0,10);
     },
     meetupCoverBG() {
-      return `--bg-url: url(${this.meetupImageUrl})`;
+      return this.meetupImageUrl ? `--bg-url: url(${this.meetupImageUrl})` : '';
     },
   },
 
