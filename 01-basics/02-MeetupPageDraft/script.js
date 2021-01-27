@@ -65,6 +65,9 @@ export const app = new Vue({
     this.getMeetup(1);
   },
 
+  agendaDefaultTitle: agendaItemTitles,
+  agendaIcon: agendaItemIcons,
+
   computed: {
     meetupImageUrl() {
       return getMeetupCoverLink(this.meetup.imageId);
@@ -76,17 +79,14 @@ export const app = new Vue({
     meetupICODate() {
       return new Date(this.meetup.date).toISOString().slice(0,10);
     },
+    meetupCoverBG() {
+      return `--bg-url: url(${this.meetupImageUrl})`;
+    },
   },
 
   methods: {
     async getMeetup(meetupId) {
       this.meetup = await (await fetch(`${API_URL}/meetups/${meetupId}`)).json();
-    },
-    getAgendaDefaultTitle(type) {
-      return agendaItemTitles[type];
-    },
-    getAgendaIcon(type) {
-      return agendaItemIcons[type];
     },
   },
 });
