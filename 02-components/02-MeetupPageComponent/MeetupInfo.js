@@ -31,8 +31,8 @@ export const MeetupInfo = {
 
   computed: {
     localMeetupDate() {
-      const options = { day: 'numeric', month: 'short', year: 'numeric'  };
-      return this.date.toLocaleString('RU-ru', options);
+      const options = { day: 'numeric', month: 'long', year: 'numeric'  };
+      return this.date.toLocaleString(navigator.language, options);
     },
     meetupICODate() {
       return this.date.toISOString().slice(0,10);
