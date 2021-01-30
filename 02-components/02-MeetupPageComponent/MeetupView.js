@@ -14,7 +14,7 @@ export const MeetupView = {
         <div class="meetup">
           <div class="meetup__content">
             <h3>Описание</h3>
-            <!-- meetup description -->
+            <meetup-description :description="meetup.description" />
 
             <h3>Программа</h3>
             <!-- meetup agenda -->
