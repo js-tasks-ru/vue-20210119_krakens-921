@@ -9,9 +9,9 @@ export const MeetupsCalendar = {
     <div class="rangepicker__calendar">
       <div class="rangepicker__month-indicator">
         <div class="rangepicker__selector-controls">
-          <button class="rangepicker__selector-control-left"></button>
-          <div>Июнь 2020</div>
-          <button class="rangepicker__selector-control-right"></button>
+          <button @click="incrementMonth" class="rangepicker__selector-control-left"></button>
+          <div>{{ title }}</div>
+          <button @click="decrementMonth" class="rangepicker__selector-control-right"></button>
         </div>
       </div>
       <div class="rangepicker__date-grid">
@@ -30,7 +30,36 @@ export const MeetupsCalendar = {
     </div>
   </div>`,
 
-  // Пропсы
+  props: {
+    meetups: {
+      type: Array,
+      required: true,
+    },
+  },
+
+  data() {
+    return {
+      currentDate: new Date(),
+    };
+  },
+
+  computed: {
+    title() {
+      const options = {
+        month: 'long',
+      };
+      return `${this.currentDate.toLocaleString(navigator.language, options)} ${this.currentDate.getFullYear()}`;
+    },
+  },
+
+  methods: {
+    incrementMonth() {
+      this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() - 1));
+    },
+    decrementMonth() {
+      this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() + 1));
+    },
+  },
 
   // В качестве локального состояния требуется хранить что-то,
   // что позволит определить текущий показывающийся месяц.
