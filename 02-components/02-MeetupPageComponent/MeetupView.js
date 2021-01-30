@@ -19,8 +19,13 @@ export const MeetupView = {
             <h3>Программа</h3>
             <!-- meetup agenda -->
           </div>
+          
           <div class="meetup__aside">
-            <!-- meetup info -->
+            <meetup-info 
+              :organizer="meetup.organizer" 
+              :place="meetup.place"
+              :date="convertedDate"
+            />
           </div>
         </div>
       </div>
@@ -43,6 +48,9 @@ export const MeetupView = {
   computed: {
     meetupCoverLink() {
       return this.meetup.imageId ? getMeetupCoverLink(this.meetup.imageId) : null;
+    },
+    convertedDate() {
+      return new Date(this.meetup.date);
     },
   },
 };

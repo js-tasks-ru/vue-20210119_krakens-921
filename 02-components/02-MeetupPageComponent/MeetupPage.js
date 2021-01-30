@@ -12,7 +12,16 @@ export const MeetupPage = {
 
   data() {
     return {
-      meetup: {},
+      meetup: {
+        id: null,
+        title: '',
+        description: '',
+        imageId: null,
+        date: null,
+        organizer: '',
+        place: '',
+        agenda: [],
+      },
     };
   },
 
