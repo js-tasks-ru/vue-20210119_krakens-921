@@ -1,6 +1,33 @@
-/*
-  Полезные функции по работе с датой можно описать вне Vue компонента
- */
+const DAY_MS = 24*60*60*1000;
+
+function lastMonthDay(date) {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+function getAllDays(lastDay) {
+  return Array.from({ length: lastDay }, (v, k) => k + 1);
+}
+
+function getPreviousWeekDays(date) {
+  const dateObj = new Date(date);
+  const dayWeekNum = dateObj.getDay();
+  const lastPreviousMonthDay = lastMonthDay(new Date(date - 1));
+
+  if(dayWeekNum !== 1) {
+    const weekdays = Array.from({ length: dayWeekNum - 1 }, (v, k) => {
+      return {
+        dayNum: lastPreviousMonthDay - k,
+        isActive: false
+      };
+    }).reverse();
+
+    return {
+      weekdays,
+      dayWeekNum,
+    };
+  }
+  return false;
+}
 
 export const MeetupsCalendar = {
   name: 'MeetupsCalendar',
@@ -49,6 +76,40 @@ export const MeetupsCalendar = {
         month: 'long',
       };
       return `${this.currentDate.toLocaleString(navigator.language, options)} ${this.currentDate.getFullYear()}`;
+    },
+
+    meetupsPerDay() {
+      const lastDay = lastMonthDay(this.currentDate);
+      const clearDays = getAllDays(lastDay);
+
+      const meetupsInCurrentMonth = clearDays.map((day) => {
+        const dayStart = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day).getTime();
+        const nextDay = dayStart + DAY_MS;
+
+        const meetups = this.meetups.filter((meetup) => {
+          return meetup.date >= dayStart && meetup.date < nextDay;
+        });
+
+        return {
+          dayNum: day,
+          date: dayStart,
+          meetups,
+          isActive: true,
+        };
+      });
+
+      return meetupsInCurrentMonth;
+    },
+
+    meetupsPerWeek() {
+      let result = [];
+      const firstWeek = getPreviousWeekDays(this.meetupsPerDay[0].date);
+
+      if(firstWeek) {
+        result.push([...firstWeek.weekdays, ...this.meetupsPerDay.slice(0, 8 - firstWeek.dayWeekNum)]);
+      }
+
+      return result;
     },
   },
 
