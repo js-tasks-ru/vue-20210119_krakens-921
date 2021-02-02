@@ -1,4 +1,4 @@
-const DAY_MS = 24*60*60*1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 function lastMonthDay(date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -13,20 +13,34 @@ function getPreviousWeekDays(date) {
   const dayWeekNum = dateObj.getDay();
   const lastPreviousMonthDay = lastMonthDay(new Date(date - 1));
 
-  if(dayWeekNum !== 1) {
+  if (dayWeekNum !== 1) {
     const weekdays = Array.from({ length: dayWeekNum - 1 }, (v, k) => {
       return {
         dayNum: lastPreviousMonthDay - k,
-        isActive: false
+        isActive: false,
       };
     }).reverse();
 
-    return {
-      weekdays,
-      dayWeekNum,
-    };
+    return weekdays;
   }
-  return false;
+  return [];
+}
+
+function getLastWeekDays(date) {
+  const dateObj = new Date(date);
+  const dayWeekNum = dateObj.getDay();
+
+  if (dayWeekNum !== 0) {
+    const weekdays = Array.from({ length: 7 - dayWeekNum}, (v, k) => {
+      return {
+        dayNum: 1 + k,
+        isActive: false,
+      };
+    });
+
+    return weekdays;
+  }
+  return [];
 }
 
 export const MeetupsCalendar = {
@@ -42,17 +56,25 @@ export const MeetupsCalendar = {
         </div>
       </div>
       <div class="rangepicker__date-grid">
-        <div class="rangepicker__cell rangepicker__cell_inactive">28</div>
-        <div class="rangepicker__cell rangepicker__cell_inactive">29</div>
-        <div class="rangepicker__cell rangepicker__cell_inactive">30</div>
-        <div class="rangepicker__cell rangepicker__cell_inactive">31</div>
-        <div class="rangepicker__cell">
-          1
-          <a class="rangepicker__event">Митап</a>
-          <a class="rangepicker__event">Митап</a>
+        <div 
+          v-for="calDay in meetupsWithInactiveDays"
+          :key="calDay.date || calDay.dayNum"
+          class="rangepicker__cell"
+          :class="{
+            'rangepicker__cell_inactive': !calDay.isActive,
+          }"
+        >
+          {{ calDay.dayNum }}
+          <template v-if="calDay.meetups">
+            <a 
+              v-for="meetup in calDay.meetups"
+              :key="meetup.id"
+              class="rangepicker__event"
+            >
+              {{ meetup.title }}
+            </a>
+          </template>
         </div>
-        <div class="rangepicker__cell">2</div>
-        <div class="rangepicker__cell">3</div>
       </div>
     </div>
   </div>`,
@@ -75,7 +97,10 @@ export const MeetupsCalendar = {
       const options = {
         month: 'long',
       };
-      return `${this.currentDate.toLocaleString(navigator.language, options)} ${this.currentDate.getFullYear()}`;
+      return `${this.currentDate.toLocaleString(
+        navigator.language,
+        options,
+      )} ${this.currentDate.getFullYear()}`;
     },
 
     meetupsPerDay() {
@@ -83,7 +108,11 @@ export const MeetupsCalendar = {
       const clearDays = getAllDays(lastDay);
 
       const meetupsInCurrentMonth = clearDays.map((day) => {
-        const dayStart = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), day).getTime();
+        const dayStart = new Date(
+          this.currentDate.getFullYear(),
+          this.currentDate.getMonth(),
+          day,
+        ).getTime();
         const nextDay = dayStart + DAY_MS;
 
         const meetups = this.meetups.filter((meetup) => {
@@ -101,13 +130,18 @@ export const MeetupsCalendar = {
       return meetupsInCurrentMonth;
     },
 
-    meetupsPerWeek() {
+    meetupsWithInactiveDays() {
       let result = [];
       const firstWeek = getPreviousWeekDays(this.meetupsPerDay[0].date);
 
-      if(firstWeek) {
-        result.push([...firstWeek.weekdays, ...this.meetupsPerDay.slice(0, 8 - firstWeek.dayWeekNum)]);
-      }
+      let lastIndex = this.meetupsPerDay.length;
+      let lastWeek = getLastWeekDays(this.meetupsPerDay[lastIndex - 1].date);
+
+      result = [
+        ...firstWeek,
+        ...this.meetupsPerDay,
+        ...lastWeek,
+      ];
 
       return result;
     },
@@ -115,10 +149,14 @@ export const MeetupsCalendar = {
 
   methods: {
     incrementMonth() {
-      this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() - 1));
+      this.currentDate = new Date(
+        this.currentDate.setMonth(this.currentDate.getMonth() - 1),
+      );
     },
     decrementMonth() {
-      this.currentDate = new Date(this.currentDate.setMonth(this.currentDate.getMonth() + 1));
+      this.currentDate = new Date(
+        this.currentDate.setMonth(this.currentDate.getMonth() + 1),
+      );
     },
   },
 
