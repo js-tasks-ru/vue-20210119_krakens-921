@@ -14,7 +14,7 @@ function getPreviousWeekDays(date) {
   const lastPreviousMonthDay = lastMonthDay(new Date(date - 1));
 
   if (dayWeekNum !== 1) {
-    const weekdays = Array.from({ length: dayWeekNum - 1 }, (v, k) => {
+    const weekdays = Array.from({ length: (dayWeekNum || 7) - 1 }, (v, k) => {
       return {
         dayNum: lastPreviousMonthDay - k,
         isActive: false,
@@ -150,12 +150,12 @@ export const MeetupsCalendar = {
   methods: {
     incrementMonth() {
       this.currentDate = new Date(
-        this.currentDate.setMonth(this.currentDate.getMonth() - 1),
+        this.currentDate.setMonth(this.currentDate.getMonth() - 1, 15),
       );
     },
     decrementMonth() {
       this.currentDate = new Date(
-        this.currentDate.setMonth(this.currentDate.getMonth() + 1),
+        this.currentDate.setMonth(this.currentDate.getMonth() + 1, 15),
       );
     },
   },
