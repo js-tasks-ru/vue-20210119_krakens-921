@@ -9,8 +9,8 @@ export const MEETUP_ID = 6;
  * @param meetup - объект с описанием митапа (и параметром meetupId)
  * @return {string} - ссылка на изображение митапа
  */
-export function getMeetupCoverLink(meetup) {
-  return `${API_URL}/images/${meetup.imageId}`;
+export function getMeetupCoverLink(imageId) {
+  return `${API_URL}/images/${imageId}`;
 }
 
 /**
