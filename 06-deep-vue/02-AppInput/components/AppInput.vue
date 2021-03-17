@@ -31,8 +31,8 @@ export default {
   inheritAttrs: false,
   data() {
     return {
-      hasLeftSlot: null,
-      hasRightSlot: null,
+      hasLeftSlot: false,
+      hasRightSlot: false,
     };
   },
   mounted() {
