@@ -17,7 +17,7 @@
         'form-control_rounded': rounded,
       }"
       v-bind="$attrs"
-      v-bind:value.prop="value"
+      :value.prop="value"
       v-on="customListeners"
     />
 

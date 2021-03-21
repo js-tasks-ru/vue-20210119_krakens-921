@@ -90,7 +90,6 @@ export default {
       }
 
       const response = await register(email, fullName, password);
-      console.log(response);
       if (!response.statusCode) {
         alert(response.id);
       } else {

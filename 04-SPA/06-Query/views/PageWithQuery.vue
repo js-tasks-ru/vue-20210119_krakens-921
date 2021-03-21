@@ -19,7 +19,7 @@ import MeetupsView from '../components/MeetupsView';
 export default {
   name: 'PageWithQuery',
   components: { MeetupsView },
-  computed:{
+  computed: {
     view: {
       get() {
         return this.$route.query.view || 'list';
@@ -55,13 +55,21 @@ export default {
   },
   methods: {
     updateQuery(field, value, defaultValue) {
-      this.$router.push({
-        path: this.$route.path,
-        query: {
-          ...this.$route.query,
-          [field]: value === defaultValue ? undefined : value,
-        },
-      });
+      const pushQuery = value === defaultValue ? undefined : value;
+
+      if (pushQuery === this.$route.query[field]) return;
+
+      this.$router
+        .push({
+          path: this.$route.path,
+          query: {
+            ...this.$route.query,
+            [field]: pushQuery,
+          },
+        })
+        .catch((e) => {
+          console.warn('updateQuery', e);
+        });
     },
   },
 };

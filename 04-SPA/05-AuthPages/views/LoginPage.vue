@@ -66,7 +66,6 @@ export default {
       }
 
       const response = await login(email, password);
-      console.log(response);
       if (!response.statusCode) {
         alert(response.fullname);
       } else {
