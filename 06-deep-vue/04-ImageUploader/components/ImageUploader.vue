@@ -1,24 +1,78 @@
 <template>
   <div class="image-uploader">
     <label
-      class="image-uploader__preview image-uploader__preview-loading"
-      :style="`--bg-image: url('https://course-vue.javascript.ru/api/images/1')`"
+      class="image-uploader__preview"
+      :class="{
+        'image-uploader__preview-loading': isLoading,
+      }"
+      :style="bgImage"
+      @click="clickHandler"
     >
-      <span>Удалить изображение</span>
+      <span v-if="isLoading">Загрузка...</span>
+      <span v-else-if="imageId === null">Загрузить изображение</span>
+      <span v-else>Удалить изображение</span>
+
       <input
         type="file"
         accept="image/*"
         class="form-control-file"
+        @change="onFileSelected"
+        ref="input"
       />
     </label>
   </div>
 </template>
 
 <script>
-// import { ImageService } from '../image-service';
+import { ImageService } from '../image-service';
 
 export default {
   name: 'ImageUploader',
+
+  model: {
+    prop: 'imageId',
+    event: 'change',
+  },
+
+  props: {
+    imageId: {
+      default: null,
+    },
+  },
+
+  data() {
+    return {
+      isLoading: false,
+    };
+  },
+
+  computed: {
+    bgImage() {
+      return this.imageId === null
+        ? ''
+        : `--bg-image: url('${ImageService.getImageURL(this.imageId)}')`;
+    },
+  },
+
+  methods: {
+    clickHandler(e) {
+      if (this.imageId !== null) {
+        e.preventDefault();
+        this.$refs.input.value = '';
+        this.emitChange();
+      }
+    },
+    emitChange(val = null) {
+      this.$emit('change', val);
+    },
+    async onFileSelected(event) {
+      this.isLoading = true;
+      const { id } = await ImageService.uploadImage(event.target.files[0]);
+
+      this.emitChange(id);
+      this.isLoading = false;
+    },
+  },
 };
 </script>
 

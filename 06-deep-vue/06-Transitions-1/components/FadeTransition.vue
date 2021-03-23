@@ -1,8 +1,20 @@
-<template></template>
+<template>
+  <transition name="fade" v-bind="attrs" v-on="$listeners">
+    <slot></slot>
+  </transition>
+</template>
 
 <script>
 export default {
   name: 'FadeTransition',
+  computed: {
+    attrs() {
+      return {
+        mode: 'out-in',
+        ...this.$attrs,
+      };
+    },
+  },
 };
 </script>
 
